@@ -1,0 +1,6 @@
+Autors: Qio Lan Canovas Ruana, Josep Sanz Gallego
+
+La Practica esta formada per 3 fitxers:
+	-features: on estan les 2 routines 
+	-master: on esta la gestio dels workers , les routines del server i el redis
+	-client: on es gestiona les peticions al server
