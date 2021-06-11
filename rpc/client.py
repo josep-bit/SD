@@ -1,13 +1,11 @@
 import xmlrpc.client
-from rpc import master
 
 #number of files
 n_files = 0
 
 class client:
-    def __init__(self, code,master):
+    def __init__(self, code):
         self.code = code
-        self.master = master
 
     def input_file_and_create_worker(self):
         global n_files
@@ -38,10 +36,9 @@ if __name__ == '__main__':
     Server = xmlrpc.client.ServerProxy('http://localhost:9000')
     print("Enter your code for user:")
     code = input()
-    master = master.master('Server')
-    master.deleteclient(code)
-    client = client(code,master)
+    Server.deleteclient(code)
+    client = client(code)
     file = client.input_file_and_create_worker()
-    master.createnWorkers(n_files,code)
+    Server.createnWorkers(n_files,code)
     task = client.choose_routine()
-    master.EnqueRedisTask(file,task,code)
+    Server.EnqueRedisTask(file,task,code)
