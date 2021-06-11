@@ -1,66 +1,47 @@
 import xmlrpc.client
-from functools import reduce
+from rpc import master
 
-from routine import feature
-from rpc.master import workers, checkQueue
-
+#number of files
+n_files = 0
 
 class client:
-    def __init__(self, Identification):
-        self.code = Identification
-        self.work = workers()
-
-    def add_value(self):
-        result = checkQueue.lrange(self.code, 0, -1)
-        self.work.remove_worker()
-        r = map(int, result)
-        add = reduce(lambda x, y: x + y, r)
-        print(add)
-
-    def has_dic(self):
-        result = checkQueue.lrange(self.code, 0, -1)
-        self.work.remove_worker()
-        for i in result:
-            print(i, "\n")
+    def __init__(self, code,master):
+        self.code = code
+        self.master = master
 
     def input_file_and_create_worker(self):
-        i = 0
+        global n_files
         print("How many files do you want to enter?")
-        num = input()
-        while i < int(num):
-            self.work.create_worker(self.code)
-            i = i + 1
-        self.work.list_worked()
+        n_files = input()
         print("Name of files with " ","":")
         file = input()
         f = file.split(",")
         return f
 
-    def choose_routine(self, list_file):
-        task = feature.task1()
-        print("If you want to countingWords, you write countW")
-        print("If you want to wordCount, you write wordC")
-        print("If you want another function, tou write the routine")
+
+    def choose_routine(self):
+        task = ''
+        print("If you want to countingWords, write countW")
+        print("If you want to wordCount,  write wordC")
+        print("If you want another function,  write the routine")
         routine = input()
         if routine == "countW":
-            for i in list_file:
-                Server.EnqueRedis(self.code, task.counting_Words(i))
-            self.add_value()
+            task = routine
         if routine == "wordC":
-            for i in list_file:
-                Server.EnqueRedis(self.code, task.word_Count(i))
-            self.has_dic()
+            task = routine
         if routine == "else":
-            Server.EnqueRedis(self.code, routine)
+            task = routine
+        return task
 
 
 if __name__ == '__main__':
     Server = xmlrpc.client.ServerProxy('http://localhost:9000')
     print("Enter your code for user:")
     code = input()
-    c1 = client(code)
-    if checkQueue.exists(code):
-        checkQueue.delete(code)
-
-    listable = c1.input_file_and_create_worker()
-    c1.choose_routine(listable)
+    master = master.master('Server')
+    master.deleteclient(code)
+    client = client(code,master)
+    file = client.input_file_and_create_worker()
+    master.createnWorkers(n_files,code)
+    task = client.choose_routine()
+    master.EnqueRedisTask(file,task,code)
