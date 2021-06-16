@@ -27,13 +27,11 @@ class master:
         result = checkQueue.lrange(code, 0, -1)
         r = map(int, result)
         add = reduce(lambda x, y: x + y, r)
-        checkQueue.blpop(code,10)
         return add
 
     def has_dic(self, code):
         result = checkQueue.lrange(code, 0, -1)
-        checkQueue.blpop(code,10)
-        return str(result)
+        return result
 
     def task_to_do(self, key):
         while True:

@@ -9,7 +9,7 @@ class client:
         self.code = code
 
     def input_file_and_create_worker(self):
-        global n_workers
+        global n_workers,n_file
         print("How many workers do you want to enter?")
         n_workers = input()
         print("Name of files with " ","":")
@@ -19,7 +19,7 @@ class client:
 
     def choose_routine(self):
         task = ''
-        print("If you want to createworker, write createW")
+        print("If you want to create worker, write createw")
         print("If you want to countingWords, write countW")
         print("If you want to wordCount,  write wordC")
         print("If you want another function,  write the routine")
@@ -27,7 +27,7 @@ class client:
         print("If you want to eliminate workers, write eliw")
         print("If you want to exit, write exit")
         routine = input()
-        if routine == "createW":
+        if routine == "createw":
             task = routine
         if routine == "countW":
             task = routine
@@ -50,10 +50,9 @@ if __name__ == '__main__':
     code = input()
     Server.deleteclient(code)
     client = client(code)
-    menu = True
-    while menu:
-        task = client.choose_routine()
-        if task == "createW":
+    task = client.choose_routine()
+    while task !='exit':
+        if task == "createw":
             file = client.input_file_and_create_worker()
             Server.createnWorkers(n_workers, code)
         if task == "listw":
@@ -63,12 +62,12 @@ if __name__ == '__main__':
             id_worker = input()
             Server.remove_worker(int(id_worker))
             print(Server.list_worked())
-
         if task == "countW":
             Server.EnqueRedisTask(file, task, code)
             print(Server.add_value(code))
         if task == "wordC":
             Server.EnqueRedisTask(file, task, code)
-            print(list(Server.has_dic(code)))
-        if task == "exit":
-            menu = False
+            x = Server.has_dic(code)
+            for i in list(x):
+                print(str(i))
+        task = client.choose_routine()
